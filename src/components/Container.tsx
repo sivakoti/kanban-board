@@ -1,17 +1,23 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
+import AddIcon from "../icons/AddIcon";
 import Delete from "../icons/Delete";
-import { Column, Id } from "../types";
+import { Column, Id, Task } from "../types";
+import TaskCard from "./TaskCard";
 
 interface Props{
     column : Column;
     deleteColumn:(id:Id)=>void;
     updateColumnTitle:(id:Id,title:string)=>void;
+    createTask:(columnId:Id)=>void;
+    tasks: Task[];
+    deleteTask:(id:Id)=>void;
+    updateTask: (id:Id,description:string)=>void;
 }
 
 const Container = (props:Props) => {
-    const {column,deleteColumn,updateColumnTitle} = props;
+    const {column,deleteColumn,updateColumnTitle,createTask,tasks,deleteTask,updateTask} = props;
     const [editTitle,setEditTitle] = useState(false);
     const {setNodeRef, attributes,listeners,transform,transition,isDragging} = useSortable({
         id:column.id,
@@ -42,11 +48,13 @@ const Container = (props:Props) => {
                 }}></input>}
                 <button className="rounded px-1 py-2 hover:stroke-white hover:bg-slate-600" onClick={()=>deleteColumn(column.id)}><Delete /></button>
             </div>
-            <div className="flex flex-grow">
-                content
+            <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
+                {tasks.map((task)=>
+                <TaskCard key={task.id} task={task} deleteTask={deleteTask} updateTask={updateTask}/>)}
             </div>
-            <div className="bg-slate-200 h-60px text-md cursor-grab rounded-md rounded-b-none border-1">
-                Footer
+            <div className="bg-slate-200 h-[40px] text-md cursor-grab rounded-md rounded-b-none border-1">
+                <button className="flex ml-[55px] justify-center gap-2 border-4 m-2 p--4 items-center active:bg-gray-300"
+                onClick={()=>{createTask(column.id)}}><AddIcon/>Add Task</button>
             </div>
 
         </div>

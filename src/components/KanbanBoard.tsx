@@ -3,11 +3,12 @@ import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import AddIcon from "../icons/AddIcon";
-import { Column, Id } from "../types";
+import { Column, Id, Task } from "../types";
 import Container from "./Container";
 
 const KanbanBoard = () => {
     const [columns,setColumns] = useState<Column[]>([]);
+    const [tasks,setTasks] = useState<Task[]>([]);
     const columnsId = useMemo(()=>columns.map((column)=>column.id),[columns]);
     const [activeColumn,setActiveColumn] = useState<Column | null>(null);
     const sensors= useSensors(useSensor(PointerSensor,{
@@ -23,10 +24,28 @@ const KanbanBoard = () => {
         }
         setColumns([...columns,newColumn])
     }
-
     const deleteColumn = (id:Id) =>{
         const filteredColumns = columns.filter((column)=>column.id!==id);
         setColumns(filteredColumns);
+    }
+    const createTask = (columnId:Id) =>{
+        const newTask:Task ={
+            id:Math.floor(Math.random() * 100000),
+            columnId,
+            description:`Task ${tasks.length+1}`,
+        }
+        setTasks([...tasks,newTask])
+    }
+    const updateTask = (id:Id,description:string)=>{
+        const updatedTask = tasks.map((task)=>{
+            if(task.id!==id) return task;
+            return {...task,description}
+        });
+        setTasks(updatedTask);
+    }
+    const deleteTask = (id:Id)=>{
+        const filteredTasks = tasks.filter((task)=>task.id!==id)
+        setTasks(filteredTasks);
     }
     const updateColumnTitle = (id:Id,title:string) =>{
             const updatedColumnTitle= columns.map((column)=>{
@@ -61,7 +80,9 @@ const KanbanBoard = () => {
                         <SortableContext items={columnsId}>
                         {columns.map((column) => (
                             <div className="w-300px h-300px bg-slate-200 p-4 ring-rose-400" key={column.id}>
-                                <Container column={column} deleteColumn={deleteColumn} updateColumnTitle={updateColumnTitle} />
+                                <Container column={column} deleteColumn={deleteColumn} updateColumnTitle={updateColumnTitle}
+                                createTask={createTask} tasks={tasks.filter((task)=>task.columnId===column.id)} deleteTask={deleteTask}
+                                updateTask={updateTask} />
                             </div> ))}
                         </SortableContext>
                     </div>
@@ -69,7 +90,8 @@ const KanbanBoard = () => {
                     bg-slate-200 border-2 border-slate-400 p-4 ring-rose-400 hover:ring-2 flex gap-2 " onClick={() => {createNewColumn()}}><AddIcon /> Add Column</button>
                 </div>
                 {createPortal(<DragOverlay>
-                    {activeColumn && <Container column={activeColumn} deleteColumn={deleteColumn} updateColumnTitle={updateColumnTitle} />}
+                    {activeColumn && <Container column={activeColumn} deleteColumn={deleteColumn} updateColumnTitle={updateColumnTitle} 
+                    createTask={createTask} tasks={tasks.filter((task)=>task.columnId===activeColumn.id)} deleteTask={deleteTask} updateTask={updateTask} />}
                 </DragOverlay>,document.body)}
             </DndContext>
         </div>
