@@ -1,0 +1,5 @@
+html,
+body,
+#root{
+  @apply bg-slate-200 text-black
+}
