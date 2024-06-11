@@ -12,7 +12,7 @@ interface Props{
 }
 const TaskCard = ({task,deleteTask,updateTask}:Props) => {
     const [mouseIsOver,setMouseIsOver] = useState(false);
-    const [editTask,setEditTask] = useState(false);
+    const [editTask,setEditTask] = useState(true);
     const {setNodeRef, attributes,listeners,transform,transition,isDragging} = useSortable({
         id:task.id,
         data:{

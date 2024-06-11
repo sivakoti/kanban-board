@@ -18,7 +18,7 @@ interface Props{
 
 const Container = (props:Props) => {
     const {column,deleteColumn,updateColumnTitle,createTask,tasks,deleteTask,updateTask} = props;
-    const [editTitle,setEditTitle] = useState(false);
+    const [editTitle,setEditTitle] = useState(true);
     const taskIds = useMemo(()=>{
         return tasks.map((task)=>task.id)
     },[tasks])
@@ -49,7 +49,7 @@ const Container = (props:Props) => {
                     if(e.key!=="Enter")return;
                     setEditTitle(false);
                 }}></input>}
-                <button className="rounded px-1 py-2 hover:stroke-white hover:bg-slate-600" onClick={()=>deleteColumn(column.id)}><Delete /></button>
+                <button className="rounded px-1 py-2 stroke-white hover:bg-gray-50 hover:opacity-100" onClick={()=>deleteColumn(column.id)}><Delete /></button>
             </div>
             <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
                 <SortableContext items={taskIds}>
